@@ -3,7 +3,7 @@ PagerDuty Exporter
 
 [![license](https://img.shields.io/github/license/DavidMellors/pagerduty-exporter.svg)](https://github.com/DavidMellors/pagerduty-exporter/blob/master/LICENSE)
 [![Docker](https://img.shields.io/badge/docker-wahooga%2Fpagerduty--exporter-blue.svg?longCache=true&style=flat&logo=docker)](https://hub.docker.com/r/wahooga/pagerduty-exporter/)
-[![Docker Build Status](https://img.shields.io/docker/build/wahooga/pagerduty-exporter.svg)](https://hub.docker.com/r/wahooga/pagerduty-exporter/)
+[![Docker Build Status](https://img.shields.io/docker/build/webdevops/pagerduty-exporter.svg)](https://hub.docker.com/r/wahooga/pagerduty-exporter/)
 
 Prometheus exporter for PagerDuty informations (users, teams, schedules, oncalls, incidents...)
 A fork of https://github.com/webdevops/pagerduty-exporter with the addition of log entries metrics
@@ -26,6 +26,10 @@ Normally no configuration is needed but can be customized using environment vari
 | `PAGERDUTY_DISABLE_TEAMS`               | `false`                     | Boolean (set to 'true' to skip collecting "team" data)                   |
 | `PAGERDUTY_TEAM_FILTER`                 | none                        | Comma delimited list of Team IDs to pass to list options when applicable |
 | `PAGERDUTY_MAX_CONNECTIONS`             | `4`                         | Maximum numbers of HTTP connections to PagerDuty API                     |
+| `PAGERDUTY_LOG_ENTRIES_TIMEZONE`        | `UTC`                | Time zone in which dates in the result will be rendered.|
+| `PAGERDUTY_LOG_ENTRIES_SINCE`           | none                 | The start of the date range over which you want to search.|
+| `PAGERDUTY_LOG_ENTRIES_UNTIL`           | none                 | The end of the date range over which you want to search. |
+| `PAGERDUTY_LOG_ENTRIES_ISOVERVIEW`      | `false`              | If true, will return a subset of log entries that show only the most important changes to the incident. |
 
 Metrics
 -------
@@ -49,6 +53,7 @@ Metrics
 | `pagerduty_schedule_oncall`           | Oncall             | Schedule oncall informations                                                          |
 | `pagerduty_incident_info`             | Incident           | Incident informations                                                                 |
 | `pagerduty_incident_status`           | Incident           | Incident status informations (acknowledgement, assignment)                            |
+| `pagerduty_log_entries`               | Log_entries        | Log entries |
 
 Prometheus queries
 ------------------
