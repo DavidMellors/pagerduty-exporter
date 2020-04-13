@@ -2,25 +2,26 @@ package main
 
 import (
 	"fmt"
-	"github.com/PagerDuty/go-pagerduty"
-	"github.com/jessevdk/go-flags"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
+
+	"github.com/PagerDuty/go-pagerduty"
+	"github.com/jessevdk/go-flags"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
-	author                    = "webdevops.io"
-	version                   = "0.12.0"
+	author  = "webdevops.io"
+	version = "0.12.0"
 
 	// PagerdutyListLimit limits the amount of items returned from an API query
 	PagerdutyListLimit = 100
 
-	// Number of failed fetches in a row before stopping the exporter
+	// CollectorErrorThreshold limits the number of failed fetches in a row before stopping the exporter
 	CollectorErrorThreshold = 5
 )
 
@@ -50,6 +51,10 @@ var opts struct {
 	PagerDutyDisableTeams              bool          `long:"pagerduty.disable-teams"                  env:"PAGERDUTY_DISABLE_TEAMS"                      description:"Set to true to disable checking PagerDuty teams (for plans that don't include it)"                `
 	PagerDutyTeamFilter                []string      `long:"pagerduty.team-filter" env-delim:","      env:"PAGERDUTY_TEAM_FILTER"                        description:"Passes team ID as a list option when applicable."`
 	PagerDutyMaxConnections            int           `long:"pagerduty.max-connections"                env:"PAGERDUTY_MAX_CONNECTIONS"                    description:"Maximum numbers of TCP connections to PagerDuty API (concurrency)" default:"4"`
+	PagerDutyLogEntriesTimeZone        string        `long:"pagerduty.logentries.timezone"            env:"PAGERDUTY_LOG_ENTRIES_TIMEZONE"               description:"Time zone in which dates in the result will be rendered." default:"UTC"`
+	PagerDutyLogEntriesSince           time.Time     `long:"pagerduty.logentries.since"               env:"PAGERDUTY_LOG_ENTRIES_SINCE"                  description:"The start of the date range over which you want to search."`
+	PagerDutyLogEntriesUntil           time.Time     `long:"pagerduty.logentries.until"               env:"PAGERDUTY_LOG_ENTRIES_UNTIL"                  description:"The end of the date range over which you want to search."`
+	PagerDutyLogEntriesIsOverview      bool          `long:"pagerduty.logentries.isoverview"          env:"PAGERDUTY_LOG_ENTRIES_ISOVERVIEW"             description:"If true, will return a subset of log entries that show only the most important changes to the incident."`
 }
 
 func main() {
@@ -171,6 +176,14 @@ func initMetricCollector() {
 	collectorName = "Incident"
 	if opts.ScrapeTimeLive.Seconds() > 0 {
 		collectorGeneralList[collectorName] = NewCollectorGeneral(collectorName, &MetricsCollectorIncident{teamListOpt: opts.PagerDutyTeamFilter})
+		collectorGeneralList[collectorName].Run(opts.ScrapeTimeLive)
+	} else {
+		daemonLogger.Infof("collector[%s]: disabled", collectorName)
+	}
+
+	collectorName = "Log_entries"
+	if opts.ScrapeTimeLive.Seconds() > 0 {
+		collectorGeneralList[collectorName] = NewCollectorGeneral(collectorName, &MetricsCollectorLogEntries{isoverview: opts.PagerDutyLogEntriesIsOverview, since: opts.PagerDutyLogEntriesSince, until: opts.PagerDutyLogEntriesUntil, timezone: opts.PagerDutyLogEntriesTimeZone})
 		collectorGeneralList[collectorName].Run(opts.ScrapeTimeLive)
 	} else {
 		daemonLogger.Infof("collector[%s]: disabled", collectorName)
