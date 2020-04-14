@@ -52,8 +52,8 @@ var opts struct {
 	PagerDutyTeamFilter                []string      `long:"pagerduty.team-filter" env-delim:","      env:"PAGERDUTY_TEAM_FILTER"                        description:"Passes team ID as a list option when applicable."`
 	PagerDutyMaxConnections            int           `long:"pagerduty.max-connections"                env:"PAGERDUTY_MAX_CONNECTIONS"                    description:"Maximum numbers of TCP connections to PagerDuty API (concurrency)" default:"4"`
 	PagerDutyLogEntriesTimeZone        string        `long:"pagerduty.logentries.timezone"            env:"PAGERDUTY_LOG_ENTRIES_TIMEZONE"               description:"Time zone in which dates in the result will be rendered." default:"UTC"`
-	PagerDutyLogEntriesSince           time.Time     `long:"pagerduty.logentries.since"               env:"PAGERDUTY_LOG_ENTRIES_SINCE"                  description:"The start of the date range over which you want to search."`
-	PagerDutyLogEntriesUntil           time.Time     `long:"pagerduty.logentries.until"               env:"PAGERDUTY_LOG_ENTRIES_UNTIL"                  description:"The end of the date range over which you want to search."`
+	PagerDutyLogEntriesSince           string        `long:"pagerduty.logentries.since"               env:"PAGERDUTY_LOG_ENTRIES_SINCE"                  description:"The start of the date range (ISO 8601 DateTime - https://v2.developer.pagerduty.com/docs/types#datetime) over which you want to search. "`
+	PagerDutyLogEntriesUntil           string        `long:"pagerduty.logentries.until"               env:"PAGERDUTY_LOG_ENTRIES_UNTIL"                  description:"The end of the date range (ISO 8601 DateTime - https://v2.developer.pagerduty.com/docs/types#datetime) over which you want to search."`
 	PagerDutyLogEntriesIsOverview      bool          `long:"pagerduty.logentries.isoverview"          env:"PAGERDUTY_LOG_ENTRIES_ISOVERVIEW"             description:"If true, will return a subset of log entries that show only the most important changes to the incident."`
 }
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/PagerDuty/go-pagerduty"
 	"github.com/prometheus/client_golang/prometheus"
@@ -19,8 +18,8 @@ type MetricsCollectorLogEntries struct {
 
 	isoverview bool
 	timezone   string
-	since      time.Time
-	until      time.Time
+	since      string
+	until      string
 }
 
 func (m *MetricsCollectorLogEntries) Setup(collector *CollectorGeneral) {
@@ -51,20 +50,24 @@ func (m *MetricsCollectorLogEntries) Collect(ctx context.Context, callback chan<
 	listOpts.Limit = PagerdutyListLimit
 	listOpts.Offset = 0
 
-	if !m.since.IsZero() {
-		listOpts.Since = m.since.Format(isoDateFormat)
+	if m.since != "" {
+		listOpts.Since = m.since
+		daemonLogger.Verbosef("Since:  %v", listOpts.Since)
 	}
-	if !m.until.IsZero() {
-		listOpts.Until = m.since.Format(isoDateFormat)
+	if m.until != "" {
+		listOpts.Until = m.until
+		daemonLogger.Verbosef("Until:  %v", listOpts.Until)
 	}
 	if m.timezone != "" {
 		listOpts.TimeZone = m.timezone
 	} else {
 		listOpts.TimeZone = "UTC"
 	}
+	daemonLogger.Verbosef("TimeZone:  %v", listOpts.TimeZone)
 	if m.isoverview {
 		listOpts.IsOverview = true
 	}
+	daemonLogger.Verbosef("IsOverview:  %v", listOpts.IsOverview)
 
 	logEntriesMetricList := MetricCollectorList{}
 
