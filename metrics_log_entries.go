@@ -7,8 +7,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const isoDateFormat = "2006-01-02T15:04:05"
-
 type MetricsCollectorLogEntries struct {
 	CollectorProcessorGeneral
 
